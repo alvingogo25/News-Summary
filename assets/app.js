@@ -32,45 +32,73 @@ function makeList(item) {
 }
 
 
-let sentimentData = {};
-var p = $('<p id="this-summary">');
+  let summaryText = "";
+  var p = $('<p id="this-summary">');
 
-// summarizes selected article
-$('body').on('click', '#short', function() {
-  var url = $(this).attr('data-url');
-  // $('#summary-here').text("<img src='/assets/images/DoubleRing-1s-200px.gif'>");
+  // summarizes selected article
+  $('body').on('click', '#short', function() {
+    var url = $(this).attr('data-url');
+    // $('#summary-here').text("<img src='/assets/images/DoubleRing-1s-200px.gif'>");
 
-  console.log(url);
-  // summarizes each article
-  var summarize = {
-    "async": true,
-    "crossDomain": true,
-    "url": "http://api.intellexer.com/summarize?apikey=3bce2a4d-87d2-458b-82ef-8b657be1aeba&url=" + url + "&summaryRestriction=7&returnedTopicsCount=2&loadConceptsTree=false&loadNamedEntityTree=false&usePercentRestriction=true&conceptsRestriction=7&structure=general&fullTextTrees=true&textStreamLength=2000&useCache=false&wrapConcepts=true",
-    "method": "GET"
-    // "headers": {
-    //   "cache-control": "no-cache"
-    // }
-  }
-  $.ajax(summarize).done(function (response) {
-
-    console.log('summary', response);
-    var itemArray = response.items
-    sentimentData['id']= 1;
-    sentimentData['language'] = 'en';
-    sentimentData['text']="";
-
-    for (var i = 0; i < itemArray.length; i++) {
-      sentimentData['text'] += itemArray[i].text + ' ';
+    console.log(url);
+    // summarizes each article
+    var summarize = {
+      "async": true,
+      "crossDomain": true,
+      "url": "http://api.intellexer.com/summarize?apikey=3bce2a4d-87d2-458b-82ef-8b657be1aeba&url=" + url + "&summaryRestriction=7&returnedTopicsCount=2&loadConceptsTree=false&loadNamedEntityTree=false&usePercentRestriction=true&conceptsRestriction=7&structure=general&fullTextTrees=true&textStreamLength=2000&useCache=false&wrapConcepts=true",
+      "method": "GET"
+      // "headers": {
+      //   "cache-control": "no-cache"
+      // }
     }
-      p.append(sentimentData.text);
+    $.ajax(summarize).done(function (response) {
 
-    console.log('items', sentimentData)
+      console.log('summary', response);
+      var itemArray = response.items
+
+      for (var i = 0; i < itemArray.length; i++) {
+        summaryText += itemArray[i].text + ' ';
+      }
+        p.append(summaryText);
+
+      $('#summary-here').append('<button id="sentiment" class="btn btn-dark">Sentiment</button>')
+    });
+    // console.log(p);
+    $('#this-summary').empty();
+    $('#sentiment-chart').empty();
+    $('#summary-here').html(p);
+    $('#summ').modal('show')
   });
-  // console.log(p);
-  $('#this-summary').empty();
-  $('#summary-here').html(p);
-  $('#summ').modal('show')
-});
+
+  $('body').on('click', '#sentiment', function() {
+    var sentimentPacket = {
+    "documents": [{
+      "id": "1",
+        "language": "en",
+        "text": summaryText
+      }
+    ]
+  }
+  $.ajax({
+      url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Ocp-Apim-Subscription-Key": "7558bc9d25074ba2bf29fee41f070cd1"
+      },
+      method: "POST",
+      // Request body
+      data: JSON.stringify(sentimentPacket)
+    })
+    .done(function(response) {
+      console.log(response);
+      $('#sentiment-chart').append(response.documents[0].score)
+    })
+    .fail(function() {
+      alert("error");
+    });
+  });
+
 
 // runs user search and displays new list of articles
 $('#run-search').click(function() {
