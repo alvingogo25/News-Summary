@@ -15,7 +15,7 @@ $(document).ready(function() {
   });
 })
 
-
+// lists article and descriptions
 function makeList(item) {
   var articleTitle = $('<h4>').text(item.title);
   var summButton = $('<button id="short" class="btn btn-primary" type="button" data-url=' + item.url + '>')
@@ -31,13 +31,15 @@ function makeList(item) {
   $('#results').append(listItem);
 }
 
-// pulls top 20 news articles on users inputs
-  // on click method
-let textArray = [];
+
+let sentimentData = {};
 var p = $('<p id="this-summary">');
+
+// summarizes selected article
 $('body').on('click', '#short', function() {
   var url = $(this).attr('data-url');
-  var that= $(this);
+  // $('#summary-here').text("<img src='/assets/images/DoubleRing-1s-200px.gif'>");
+
   console.log(url);
   // summarizes each article
   var summarize = {
@@ -50,26 +52,27 @@ $('body').on('click', '#short', function() {
     // }
   }
   $.ajax(summarize).done(function (response) {
+
     console.log('summary', response);
-    var itemArray = response.items;
+    var itemArray = response.items
+    sentimentData['id']= 1;
+    sentimentData['language'] = 'en';
+    sentimentData['text']="";
 
     for (var i = 0; i < itemArray.length; i++) {
-      var thing = {}
-      thing['text']= itemArray[i].text;
-      textArray.push(thing);
-      p.append(itemArray[i].text + ' ');
+      sentimentData['text'] += itemArray[i].text + ' ';
     }
-    console.log('items', textArray)
+      p.append(sentimentData.text);
+
+    console.log('items', sentimentData)
   });
-  console.log(p);
-  $('#summary-here').append(p);
+  // console.log(p);
+  $('#this-summary').empty();
+  $('#summary-here').html(p);
   $('#summ').modal('show')
 });
 
-$('#close').click(function() {
-  $('#this-summary').empty();
-});
-
+// runs user search and displays new list of articles
 $('#run-search').click(function() {
   $('#results').empty();
   var query = $('#search-term').val().trim();
