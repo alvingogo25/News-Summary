@@ -33,42 +33,74 @@ function makeList(item) {
 
 // pulls top 20 news articles on users inputs
   // on click method
-let textArray = [];
-var p = $('<p id="this-summary">');
-$('body').on('click', '#short', function() {
-  var url = $(this).attr('data-url');
-  var that= $(this);
-  console.log(url);
-  // summarizes each article
-  var summarize = {
-    "async": true,
-    "crossDomain": true,
-    "url": "http://api.intellexer.com/summarize?apikey=3bce2a4d-87d2-458b-82ef-8b657be1aeba&url=" + url + "&summaryRestriction=7&returnedTopicsCount=2&loadConceptsTree=false&loadNamedEntityTree=false&usePercentRestriction=true&conceptsRestriction=7&structure=general&fullTextTrees=true&textStreamLength=2000&useCache=false&wrapConcepts=true",
-    "method": "GET"
-    // "headers": {
-    //   "cache-control": "no-cache"
-    // }
-  }
-  $.ajax(summarize).done(function (response) {
-    console.log('summary', response);
-    var itemArray = response.items;
+  let summaryText = "";
+  var p = $('<p id="this-summary">');
 
-    for (var i = 0; i < itemArray.length; i++) {
-      var thing = {}
-      thing['text']= itemArray[i].text;
-      textArray.push(thing);
-      p.append(itemArray[i].text + ' ');
+  // summarizes selected article
+  $('body').on('click', '#short', function() {
+    var url = $(this).attr('data-url');
+    // $('#summary-here').text("<img src='/assets/images/DoubleRing-1s-200px.gif'>");
+
+    console.log(url);
+    // summarizes each article
+    var summarize = {
+      "async": true,
+      "crossDomain": true,
+      "url": "http://api.intellexer.com/summarize?apikey=3bce2a4d-87d2-458b-82ef-8b657be1aeba&url=" + url + "&summaryRestriction=7&returnedTopicsCount=2&loadConceptsTree=false&loadNamedEntityTree=false&usePercentRestriction=true&conceptsRestriction=7&structure=general&fullTextTrees=true&textStreamLength=2000&useCache=false&wrapConcepts=true",
+      "method": "GET"
+      // "headers": {
+      //   "cache-control": "no-cache"
+      // }
     }
-    console.log('items', textArray)
-  });
-  console.log(p);
-  $('#summary-here').append(p);
-  $('#summ').modal('show')
-});
+    $.ajax(summarize).done(function (response) {
 
-$('#close').click(function() {
-  $('#this-summary').empty();
-});
+      console.log('summary', response);
+      var itemArray = response.items
+
+      for (var i = 0; i < itemArray.length; i++) {
+        summaryText += itemArray[i].text + ' ';
+      }
+        p.append(summaryText);
+
+      $('#summary-here').append('<button id="sentiment" class="btn btn-dark">Sentiment</button>')
+    });
+    // console.log(p);
+    $('#this-summary').empty();
+    $('#sentiment-chart').empty();
+    $('#summary-here').html(p);
+    $('#summ').modal('show')
+  });
+
+  $('body').on('click', '#sentiment', function() {
+    var sentimentPacket = {
+    "documents": [{
+      "id": "1",
+        "language": "en",
+        "text": summaryText
+      }
+    ]
+  }
+  $.ajax({
+      url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Ocp-Apim-Subscription-Key": "7558bc9d25074ba2bf29fee41f070cd1"
+      },
+      method: "POST",
+      // Request body
+      data: JSON.stringify(sentimentPacket)
+    })
+    .done(function(response) {
+      console.log(response);
+      $('#sentiment-chart').append(response.documents[0].score)
+    })
+    .fail(function() {
+      alert("error");
+    });
+  });
+
+
 
 $('#run-search').click(function() {
   $('#results').empty();
