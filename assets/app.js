@@ -15,7 +15,7 @@ $(document).ready(function() {
   });
 })
 
-
+// lists article and descriptions
 function makeList(item) {
   var articleTitle = $('<h4>').text(item.title);
   var summButton = $('<button id="short" class="btn btn-primary" type="button" data-url=' + item.url + '>')
@@ -31,8 +31,7 @@ function makeList(item) {
   $('#results').append(listItem);
 }
 
-// pulls top 20 news articles on users inputs
-  // on click method
+
   let summaryText = "";
   var p = $('<p id="this-summary">');
 
@@ -101,7 +100,7 @@ function makeList(item) {
   });
 
 
-
+// runs user search and displays new list of articles
 $('#run-search').click(function() {
   $('#results').empty();
   var query = $('#search-term').val().trim();
