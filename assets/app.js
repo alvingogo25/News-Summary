@@ -60,11 +60,13 @@ $('body').on('click', '#short', function() {
       summaryText += itemArray[i].text + ' ';
     }
     p.append(summaryText);
+
     $('#summary-here').html(p);
     $('#summary-here').append('<button id="sentiment" class="btn btn-dark">Sentiment</button>')
   }).fail(function(){
     $('#summary-here').text('Host URL failed to load.')
   });
+
   $('#summ').modal('show')
 });
 
