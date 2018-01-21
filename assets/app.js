@@ -32,7 +32,7 @@ function makeList(item) {
 }
 
 
-let sentimentData = {};
+let summaryText = "";
 var p = $('<p id="this-summary">');
 
 // summarizes selected article
@@ -52,25 +52,50 @@ $('body').on('click', '#short', function() {
     // }
   }
   $.ajax(summarize).done(function (response) {
-
     console.log('summary', response);
     var itemArray = response.items
-    sentimentData['id']= 1;
-    sentimentData['language'] = 'en';
-    sentimentData['text']="";
-
     for (var i = 0; i < itemArray.length; i++) {
-      sentimentData['text'] += itemArray[i].text + ' ';
+      summaryText += itemArray[i].text + ' ';
     }
-      p.append(sentimentData.text);
-
-    console.log('items', sentimentData)
+    p.append(summaryText);
+    $('#summary-here').append('<button id="sentiment" class="btn btn-dark">Sentiment</button>')
   });
-  // console.log(p);
+
   $('#this-summary').empty();
+  $('#sentiment-chart').empty();
   $('#summary-here').html(p);
   $('#summ').modal('show')
 });
+
+$('body').on('click', '#sentiment', function() {
+  var sentimentPacket = {
+    "documents": [{
+      "id": "1",
+      "language": "en",
+      "text": summaryText
+    }
+  ]
+}
+$.ajax({
+  url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment",
+  headers: {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+    "Ocp-Apim-Subscription-Key": "7558bc9d25074ba2bf29fee41f070cd1"
+  },
+  method: "POST",
+  // Request body
+  data: JSON.stringify(sentimentPacket)
+})
+.done(function(response) {
+  console.log(response);
+  $('#sentiment-chart').append(response.documents[0].score)
+})
+.fail(function() {
+  alert("error");
+});
+});
+
 
 // runs user search and displays new list of articles
 $('#run-search').click(function() {
