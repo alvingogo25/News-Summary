@@ -37,8 +37,10 @@ var p = $('<p id="this-summary">');
 
 // summarizes selected article
 $('body').on('click', '#short', function() {
+  $('#this-summary').empty();
+  $('#sentiment-chart').empty();
   var url = $(this).attr('data-url');
-  // $('#summary-here').text("<img src='/assets/images/DoubleRing-1s-200px.gif'>");
+  $('#summary-here').html("<img src='./assets/images/DoubleRing-1s-200px.gif' class='border-0 modal-content mx-auto' style='width:100px; height:100px'>");
 
   console.log(url);
   // summarizes each article
@@ -58,12 +60,13 @@ $('body').on('click', '#short', function() {
       summaryText += itemArray[i].text + ' ';
     }
     p.append(summaryText);
+
+    $('#summary-here').html(p);
     $('#summary-here').append('<button id="sentiment" class="btn btn-dark">Sentiment</button>')
+  }).fail(function(){
+    $('#summary-here').text('Host URL failed to load.')
   });
 
-  $('#this-summary').empty();
-  $('#sentiment-chart').empty();
-  $('#summary-here').html(p);
   $('#summ').modal('show')
 });
 
