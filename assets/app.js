@@ -33,7 +33,6 @@ function makeList(item) {
   $('#results').append(articleDiv);
 }
 
-
 let summaryText = "";
 var p = $('<p id="this-summary">');
 
@@ -68,10 +67,8 @@ $('body').on('click', '#short', function() {
   }).fail(function() {
     $('#summary-here').text('Host URL failed to load.')
   });
-
   $('#summ').modal('show')
 });
-
 
 //Generate Sentiment Chart
 $('body').on('click', '#sentiment', function() {
@@ -145,10 +142,19 @@ $('body').on('click', '#sentiment', function() {
 });
 
 // runs user search and displays new list of articles
-$('#run-search').click(function() {
+$('#search-term').keyup(function(event) {
+  if (event.keyCode === 13) {
+    search();
+  }
+});
+
+$('#run-search').click(search);
+
+function search() {
   $('#results').empty();
   var query = $('#search-term').val().trim();
   query = query.replace(/ /g, '-');
+
   if (isNaN(query)) {
     var newqueryURL = "https://newsapi.org/v2/everything?q=" + query + "&language=en&apiKey=75784847d8a1404aa2a52bacd32952c3"
     console.log(query);
@@ -167,4 +173,4 @@ $('#run-search').click(function() {
     $('#summary-here').text('Detected only integers. Please add words');
     $('#summ').modal('show');
   }
-})
+}
