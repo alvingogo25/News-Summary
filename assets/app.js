@@ -49,7 +49,7 @@ $('body').on('click', '#short', function() {
   var summarize = {
     "async": true,
     "crossDomain": true,
-    "url": "https://api.intellexer.com/summarize?apikey=3bce2a4d-87d2-458b-82ef-8b657be1aeba&url=" + url + "&summaryRestriction=7&returnedTopicsCount=2&loadConceptsTree=false&loadNamedEntityTree=false&usePercentRestriction=true&conceptsRestriction=7&structure=general&fullTextTrees=true&textStreamLength=2000&useCache=false&wrapConcepts=true",
+    "url": "https://api.intellexer.com/summarize?apikey=3bce2a4d-87d2-458b-82ef-8b657be1aeba&url=" + url + "&summaryRestriction=7&returnedTopicsCount=2&loadConceptsTree=false&loadNamedEntityTree=false&usePercentRestriction=true&conceptsRestriction=7&structure=general&fullTextTrees=true&textStreamLength=5000&useCache=false&wrapConcepts=true",
     "method": "GET"
 
   }
@@ -156,17 +156,24 @@ function search() {
   query = query.replace(/ /g, '-');
 
   if (isNaN(query)) {
-    var newqueryURL = "https://newsapi.org/v2/everything?q=" + query + "&language=en&apiKey=75784847d8a1404aa2a52bacd32952c3"
+    var newqueryURL = "https://newsapi.org/v2/everything?q=" + query + "&language=en&sortBy=popularity&apiKey=75784847d8a1404aa2a52bacd32952c3"
     console.log(query);
     $.ajax({
       url: newqueryURL,
       method: "GET"
     })
     .done(function(responze) {
+      console.log(responze);
       let urlz = responze.articles
       for (var j = 0; j < urlz.length; j++) {
-        makeList(urlz[j]);
-      };
+        if (urlz[j].source.name !== "Lifehacker.com"){
+          makeList(urlz[j]);
+        }
+      }
+      if ($('#results').is(':empty')){
+        $('#summary-here').html('No articles from reliable sources found.<br>Try being more specific.');
+        $('#summ').modal('show');
+      }
     });
   }
   else {
