@@ -22,13 +22,13 @@ function makeList(item) {
   articleLink.append(articleTitle);
   var summButton = $('<button id="short" class="btn btn-primary" type="button" data-url=' + item.url + '>');
   var articleDescr = $('<p>').text(item.description);
-  var buttonDiv = $('<div>')
+  var buttonDiv = $('<div class=\'col-2\'>')
   buttonDiv.append(summButton);
   var articleDiv = $('<div class=\'row mb-2 mx-3 pb-3 border-bottom border-white\'>');
   var summDiv = $('<div class="summaryDiv col-10">')
   summButton.text('Summarize')
-  summDiv.append(articleDescr)
-  articleDiv.append(articleLink, summDiv, buttonDiv);
+  summDiv.append(articleLink, articleDescr)
+  articleDiv.append(summDiv, buttonDiv);
 
   $('#results').append(articleDiv);
 }
