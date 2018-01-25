@@ -22,7 +22,7 @@ function makeList(item) {
   articleLink.append(articleTitle);
   var summButton = $('<button id="short" class="btn btn-primary" type="button" data-url=' + item.url + '>');
   var articleDescr = $('<p>').text(item.description);
-  var buttonDiv = $('<div class=\'col-2\'>')
+  var buttonDiv = $('<div class=\'col\'>')
   buttonDiv.append(summButton);
   var articleDiv = $('<div class=\'row mb-2 mx-3 pb-3 border-bottom border-white\'>');
   var summDiv = $('<div class="summaryDiv col-10">')
